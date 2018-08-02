@@ -103,5 +103,10 @@ public class BaseApplication extends Application {
         public void onBackToDesktop() {
             Log.d(TAG, "onBackToDesktop");
         }
+
+        @Override
+        public void onForeground() {
+            Log.d(TAG, "onForeground");
+        }
     };
 }

@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 /**
@@ -21,6 +22,7 @@ import android.widget.Toast;
 
 class FloatLifecycle extends BroadcastReceiver implements Application.ActivityLifecycleCallbacks {
 
+    private static final String TAG = "FloatLifecycle";
     private static final String SYSTEM_DIALOG_REASON_KEY = "reason";
     private static final String SYSTEM_DIALOG_REASON_HOME_KEY = "homekey";
     private static final long delay = 300;
@@ -64,6 +66,7 @@ class FloatLifecycle extends BroadcastReceiver implements Application.ActivityLi
 
     @Override
     public void onActivityResumed(Activity activity) {
+        Log.i(TAG, "onActivityResumed.. num: " + num);
         if (sResumedListener != null) {
             num--;
             if (num == 0) {
@@ -79,11 +82,13 @@ class FloatLifecycle extends BroadcastReceiver implements Application.ActivityLi
         }
         if (appBackground) {
             appBackground = false;
+            mLifecycleListener.onForeground();
         }
     }
 
     @Override
     public void onActivityPaused(final Activity activity) {
+        Log.i(TAG, "onActivityResumed.. resumeCount: " + resumeCount);
         resumeCount--;
         mHandler.postDelayed(new Runnable() {
             @Override
@@ -105,6 +110,7 @@ class FloatLifecycle extends BroadcastReceiver implements Application.ActivityLi
 
     @Override
     public void onActivityStopped(Activity activity) {
+        Log.i(TAG, "onActivityStopped.. startCount: " + startCount);
         startCount--;
         if (startCount == 0) {
             mLifecycleListener.onBackToDesktop();
@@ -114,6 +120,7 @@ class FloatLifecycle extends BroadcastReceiver implements Application.ActivityLi
     @Override
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
+        Log.i(TAG, "onReceive.. action: " + action);
         if (action != null && action.equals(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)) {
             String reason = intent.getStringExtra(SYSTEM_DIALOG_REASON_KEY);
             if (SYSTEM_DIALOG_REASON_HOME_KEY.equals(reason)) {
