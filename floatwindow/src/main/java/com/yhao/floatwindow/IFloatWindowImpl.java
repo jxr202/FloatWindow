@@ -8,6 +8,7 @@ import android.animation.TimeInterpolator;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.os.Build;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
@@ -19,7 +20,6 @@ import android.view.animation.DecelerateInterpolator;
  */
 
 public class IFloatWindowImpl extends IFloatWindow {
-
 
     private FloatWindow.B mB;
     private FloatView mFloatView;
@@ -214,6 +214,12 @@ public class IFloatWindowImpl extends IFloatWindow {
                                 changeY = event.getRawY() - lastY;
                                 newX = (int) (mFloatView.getX() + changeX);
                                 newY = (int) (mFloatView.getY() + changeY);
+                                if (newY < 0) { //添加上和下的越界判断
+                                    newY = 0;
+                                }
+                                if (newY > Util.getScreenHeight(mB.mApplicationContext) - v.getHeight() - 20) {
+                                    newY = Util.getScreenHeight(mB.mApplicationContext) - v.getHeight() - 20;
+                                }
                                 mFloatView.updateXY(newX, newY);
                                 if (mB.mViewStateListener != null) {
                                     mB.mViewStateListener.onPositionUpdate(newX, newY);
@@ -231,6 +237,8 @@ public class IFloatWindowImpl extends IFloatWindow {
                                         int endX = (startX * 2 + v.getWidth() > Util.getScreenWidth(mB.mApplicationContext)) ?
                                                 Util.getScreenWidth(mB.mApplicationContext) - v.getWidth() - mB.mSlideRightMargin :
                                                 mB.mSlideLeftMargin;
+
+                                        Log.i(TAG, "startX: " + startX + ", endX: " + endX + ", upY: " + upY);
                                         mAnimator = ObjectAnimator.ofInt(startX, endX);
                                         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                             @Override
@@ -247,6 +255,7 @@ public class IFloatWindowImpl extends IFloatWindow {
                                     case MoveType.back:
                                         PropertyValuesHolder pvhX = PropertyValuesHolder.ofInt("x", mFloatView.getX(), mB.xOffset);
                                         PropertyValuesHolder pvhY = PropertyValuesHolder.ofInt("y", mFloatView.getY(), mB.yOffset);
+                                        //Log.i(TAG, "xOffset: " + mB.xOffset + ", yOffset: " + mB.yOffset);
                                         mAnimator = ObjectAnimator.ofPropertyValuesHolder(pvhX, pvhY);
                                         mAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                                             @Override

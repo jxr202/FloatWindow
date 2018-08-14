@@ -8,6 +8,9 @@ import android.view.View;
  */
 
 public abstract class IFloatWindow {
+
+    static String TAG = "Jxr35";
+
     public abstract void show();
 
     public abstract void hide();
