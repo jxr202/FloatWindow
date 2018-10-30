@@ -44,9 +44,13 @@ public class FloatActivity extends Activity {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 756232212) {
             if (PermissionUtil.hasPermissionOnActivityResult(this)) {
-                mPermissionListener.onSuccess();
+                if (mPermissionListener != null) {
+                    mPermissionListener.onSuccess();
+                }
             } else {
-                mPermissionListener.onFail();
+                if (mPermissionListener != null) {
+                    mPermissionListener.onFail();
+                }
             }
         }
         finish();
